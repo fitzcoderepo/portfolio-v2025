@@ -31,30 +31,51 @@ export default function FloatingNav({
         { id: "projects", label: "Projects", icon: FolderGit2 },
         { id: "contact", label: "Contact", icon: Mail },
     ],
-    
+
     className = "border border-white/10 bg-zinc-900/70 backdrop-blur-md",
-    itemClass = "text-zinc-300 hover:text-white hover:bg-white/10 focus-visible:ring-sky-400",
-    itemActiveClass = "text-white bg-white/15 ring-1 ring-white/20 shadow",
+    itemClass = "text-zinc-400 hover:bg-zinc-200/10 hover:outline-1 hover:outline-cyan-400/40",
+    itemActiveClass = "text-cyan-400 bg-zinc-100/15 ring-1 ring-cyan-400/40 ",
     railPosition = "right",
-    
-} : Props) {
+
+}: Props) {
     const [active, setActive] = useState<string>(sections[0]?.id ?? "");
     const ids = useMemo(() => sections.map((s) => s.id), [sections]);
 
     useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                const visible = entries
-                    .filter((e) => e.isIntersecting)
-                    .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-                if (visible?.target?.id) setActive(visible.target.id);
-            },
-            { rootMargin: "-40% 0px -50% 0px", threshold: [0.1, 0.25, 0.5, 0.75, 1] }
-        );
+        const MID = window.innerHeight * 0.5; // viewport center
+
+        const pickActive = (entries: IntersectionObserverEntry[]) => {
+            // consider only intersecting sections
+            const visible = entries.filter((e) => e.isIntersecting);
+            if (!visible.length) return;
+
+            // choose the one whose top is closest to the center line
+            let best = visible[0];
+            let bestDist = Math.abs(visible[0].boundingClientRect.top - MID);
+
+            for (let i = 1; i < visible.length; i++) {
+                const dist = Math.abs(visible[i].boundingClientRect.top - MID);
+                if (dist < bestDist) {
+                    best = visible[i];
+                    bestDist = dist;
+                }
+            }
+            const id = (best.target as HTMLElement).id;
+            if (id) setActive(id);
+        };
+
+        const observer = new IntersectionObserver(pickActive, {
+            root: null,
+            // only treat the middle band as "active"
+            rootMargin: "-45% 0px -45% 0px",
+            threshold: [0, 0.01, 0.1, 0.25, 0.5],
+        });
+
         ids.forEach((id) => {
             const el = document.getElementById(id);
             if (el) observer.observe(el);
         });
+
         return () => observer.disconnect();
     }, [ids]);
 
