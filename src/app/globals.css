@@ -22,9 +22,17 @@
   }
 }
 
+.marquee-container:hover .marquee-content {
+  animation-play-state: paused;
+}
+
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  0% { transform: translateX(100%); }
+  100%   { transform: translateX(-300%); }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
 }
 
 
