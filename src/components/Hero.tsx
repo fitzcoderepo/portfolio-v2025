@@ -1,7 +1,7 @@
 'use client'
 import TechMarquee from "./TechMarquee";
 
- // directive used to indicate that the file should be treated as a client-side component. This is telling Next.js that this component must be rendered in the browser, not on the server.
+// directive used to indicate that the file should be treated as a client-side component. This is telling Next.js that this component must be rendered in the browser, not on the server.
 
 // app/components/Hero.tsx
 export function Hero() {
@@ -15,50 +15,37 @@ export function Hero() {
         <div className="absolute -inset-24 blur-3xl opacity-40 [background:var(--grad)] [mask-image:radial-gradient(var(--spread)_var(--spread)_at_50%_40%,black,transparent_70%)]" />
       </div>
 
-      {/* Base + grid + noise
-      <div className="absolute inset-0 bg-[radial-gradient(70%_100%_at_50%_0%,#0b1220,60%,#05070b)]" />
-      <div className="pointer-events-none absolute inset-0">
-        <div className="[background-image:radial-gradient(#ffffff14_1px,transparent_1px)] [background-size:18px_18px] [background-position:-9px_-9px] opacity-20" />
-        <div className="absolute inset-0 opacity-10 mix-blend-overlay [background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%224%22 height=%224%22><filter id=%22n%22><feTurbulence baseFrequency=%220.7%22/></filter><rect width=%224%22 height=%224%22 filter=%22url(%23n)%22/></svg>')]" />
-      </div> */}
+      <div className="absolute flex flex-col top-15 left-20">
+        <span className="text-2xl font-bold uppercase text-zinc-400">
+          Alec Fitzgerald
+        </span>
+
+        <span className="text-lg text-zinc-500">
+          Software Developer
+        </span>
+      </div>
+
 
       {/* Content */}
       <div className="relative z-10 px-6 text-center text-zinc-200">
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-200 via-slate-200 to-zinc-100">
+        <h1 className="text-6xl md:text-8xl font-extrabold tracking-tight">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-200 via-slate-200 to-zinc-400">
             Hello, world.
           </span>
         </h1>
 
-        <p className="mt-5 text-lg md:text-xl text-zinc-300/90 max-w-2xl mx-auto">
-          I build robust backends and the UIs they power.
-        </p>
-
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <a
-            href="#projects"
-            className="group relative rounded-xl px-6 py-3 font-medium ring-1 ring-blue-300/30 bg-blue-400/10 hover:bg-blue-400/20 transition"
-          >
-            <span className="absolute inset-0 -z-10 rounded-xl blur-lg opacity-0 group-hover:opacity-60 bg-blue-400/30 transition" />
-            See projects
-          </a>
-          <a
-            href="#about"
-            className="rounded-xl px-6 py-3 font-medium ring-1 ring-white/15 hover:bg-white/10 transition"
-          >
-            About me
-          </a>
-          <a
-            href="#contact"
-            className="rounded-xl px-6 py-3 font-medium ring-1 ring-white/15 hover:bg-white/10 transition"
-          >
-            Contact
-          </a>
+        <div className="mx-auto max-w-3xl mt-10 justify-center text-zinc-300 text-lg">
+          I'm a software developer who enjoys taking vague ideas and collaborating with others to turn them into clear, working systems.
+          Continuous learning is part of the craft, and I adapt quickly to new tools and evolving requirements.
+          I value reliability, clarity, and clean engineering.
         </div>
 
         {/* Marquee */}
-        <div className="mt-10">
-          <TechMarquee speedMs={22000} grayscale />
+        <div className="mt-15">
+          <div className="mx-auto max-w-lg px-3">
+            <TechMarquee />
+          </div>
+
 
         </div>
       </div>

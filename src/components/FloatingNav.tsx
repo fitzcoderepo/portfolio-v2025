@@ -39,7 +39,22 @@ export default function FloatingNav({
 
 }: Props) {
     const [active, setActive] = useState<string>(sections[0]?.id ?? "");
+    const [docked, setDocked] = useState(false);
     const ids = useMemo(() => sections.map((s) => s.id), [sections]);
+
+    useEffect(() => {
+        const SCROLL_THRESHOLD = 100; // px from top
+
+        const onScroll = () => {
+            const shouldDock = window.scrollY > SCROLL_THRESHOLD;
+            setDocked(shouldDock);
+        };
+
+        onScroll(); // run on mount if page reloads
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
 
     useEffect(() => {
         const MID = window.innerHeight * 0.5; // viewport center
@@ -81,8 +96,17 @@ export default function FloatingNav({
 
     const scrollTo = (id: string) => (e: React.MouseEvent) => {
         e.preventDefault();
+
+        // dock when going to any section other than top
+        if (id === "top") {
+            setDocked(false);
+        } else {
+            setDocked(true);
+        }
+
         const el = document.getElementById(id);
         if (!el) return;
+
         el.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
         el.setAttribute("tabindex", "-1");
         (el as HTMLElement).focus({ preventScroll: true });
@@ -91,15 +115,12 @@ export default function FloatingNav({
     const itemBase =
         "inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2";
     const containerBase =
-        "fixed z-50 p-2 rounded-2xl shadow-lg";
+        "fixed z-50 p-2 rounded-2xl shadow-zinc-700 shadow-md";
 
     return (
         <>
             {/* Mobile bottom pill */}
-            <nav
-                aria-label="Section navigation"
-                className={`${containerBase} ${className} bottom-4 inset-x-0 mx-auto w-max max-w-[95vw] md:hidden pb-[env(safe-area-inset-bottom)]`}
-            >
+            <nav aria-label="Section navigation" className={`${containerBase} ${className} bottom-4 inset-x-0 mx-auto w-max max-w-[95vw] md:hidden pb-[env(safe-area-inset-bottom)]`} >
                 <ul className="flex items-center gap-1">
                     {sections.map(({ id, label, icon: Icon = Home }) => (
                         <li key={id}>
@@ -120,7 +141,14 @@ export default function FloatingNav({
             {/* Desktop side rail */}
             <nav
                 aria-label="Section navigation"
-                className={`${containerBase} ${className} hidden md:flex flex-col gap-2 top-1/2 -translate-y-1/2 ${railPosition === "right" ? "right-4" : "left-4"
+                className={`${containerBase} ${className}  hidden md:flex flex-col gap-2
+                    top-1/2 -translate-y-1/2
+                    transform transition-all duration-500
+                ${docked
+                        ? railPosition === "right"
+                            ? "right-4 translate-x-0"
+                            : "left-4 translate-x-0"
+                        : "left-1/2 -translate-x-1/2"
                     }`}
             >
                 {sections.map(({ id, label, icon: Icon = Home }) => (
