@@ -137,8 +137,9 @@ export default function FloatingNav({
                     ))}
                 </ul>
             </nav>
-
+            
             {/* Desktop side rail */}
+            // TODO 
             <nav
                 aria-label="Section navigation"
                 className={`${containerBase} ${className}  hidden md:flex flex-col gap-2
