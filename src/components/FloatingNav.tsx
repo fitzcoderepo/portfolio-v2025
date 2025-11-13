@@ -1,8 +1,6 @@
-// components/FloatingNav.tsx
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Home, User, FolderGit2, Mail } from "lucide-react";
-
 
 type Section = {
     id: string;
@@ -16,6 +14,27 @@ type Props = {
     itemClass?: string;         // base item text/hover
     itemActiveClass?: string;   // active item state
     railPosition?: "right" | "left";
+};
+
+const buildFrames = (deltaX: number, deltaY: number, phase: "dock" | "undock" | "shift"): Keyframe[] => {
+    if (phase === "dock") {
+        return [
+            { transform: `translate(${deltaX}px, ${deltaY}px)`, offset: 0 },
+            { transform: `translate(0px, ${deltaY}px)`, offset: 0.65 },
+            { transform: "translate(0px, 0px)", offset: 1 },
+        ];
+    }
+    if (phase === "undock") {
+        return [
+            { transform: `translate(${deltaX}px, ${deltaY}px)`, offset: 0 },
+            { transform: `translate(${deltaX}px, 0px)`, offset: 0.35 },
+            { transform: "translate(0px, 0px)", offset: 1 },
+        ];
+    }
+    return [
+        { transform: `translate(${deltaX}px, ${deltaY}px)` },
+        { transform: "translate(0px, 0px)" },
+    ];
 };
 
 const prefersReducedMotion =
@@ -32,22 +51,28 @@ export default function FloatingNav({
         { id: "contact", label: "Contact", icon: Mail },
     ],
 
-    className = "border border-white/10 bg-zinc-900/70 backdrop-blur-md",
-    itemClass = "text-zinc-400 hover:bg-zinc-200/10 hover:outline-1 hover:outline-cyan-400/40",
-    itemActiveClass = "text-cyan-400 bg-zinc-100/15 ring-1 ring-cyan-400/40 ",
+    className = "",
+    itemClass = "text-zinc-400  hover:ring-1",
+    itemActiveClass = "text-cyan-400 ring-2 ring-cyan-400/40 ",
     railPosition = "right",
 
 }: Props) {
     const [active, setActive] = useState<string>(sections[0]?.id ?? "");
     const [docked, setDocked] = useState(false);
+    const [expanded, setExpanded] = useState(false);
     const ids = useMemo(() => sections.map((s) => s.id), [sections]);
+    const isRightDocked = docked && railPosition === "right";
+    const navRef = useRef<HTMLElement | null>(null);
+    const previousSnapshot = useRef<{ rect: DOMRect; docked: boolean } | null>(null);
 
     useEffect(() => {
         const SCROLL_THRESHOLD = 100; // px from top
 
         const onScroll = () => {
-            const shouldDock = window.scrollY > SCROLL_THRESHOLD;
+            const scrollY = window.scrollY;
+            const shouldDock = scrollY > SCROLL_THRESHOLD;
             setDocked(shouldDock);
+            setExpanded(scrollY > 0);
         };
 
         onScroll(); // run on mount if page reloads
@@ -56,26 +81,47 @@ export default function FloatingNav({
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
+    useLayoutEffect(() => {
+        const node = navRef.current;
+        if (!node) return;
+
+        const rect = node.getBoundingClientRect();
+        const prev = previousSnapshot.current;
+
+        if (prev) {
+            const deltaX = prev.rect.left - rect.left;
+            const deltaY = prev.rect.top - rect.top;
+
+            if (deltaX || deltaY) {
+                const phase = !prev.docked && docked
+                    ? "dock"
+                    : prev.docked && !docked
+                        ? "undock"
+                        : "shift";
+
+                node.animate(buildFrames(deltaX, deltaY, phase), {
+                    duration: 900,
+                    easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+                });
+            }
+        }
+
+        previousSnapshot.current = { rect, docked };
+    }, [docked, railPosition]);
+
     useEffect(() => {
         const MID = window.innerHeight * 0.5; // viewport center
 
         const pickActive = (entries: IntersectionObserverEntry[]) => {
-            // consider only intersecting sections
-            const visible = entries.filter((e) => e.isIntersecting);
-            if (!visible.length) return;
+            const best = entries
+                .filter((entry) => entry.isIntersecting)
+                .sort(
+                    (a, b) =>
+                        Math.abs(a.boundingClientRect.top - MID) -
+                        Math.abs(b.boundingClientRect.top - MID),
+                )[0];
 
-            // choose the one whose top is closest to the center line
-            let best = visible[0];
-            let bestDist = Math.abs(visible[0].boundingClientRect.top - MID);
-
-            for (let i = 1; i < visible.length; i++) {
-                const dist = Math.abs(visible[i].boundingClientRect.top - MID);
-                if (dist < bestDist) {
-                    best = visible[i];
-                    bestDist = dist;
-                }
-            }
-            const id = (best.target as HTMLElement).id;
+            const id = (best?.target as HTMLElement | undefined)?.id;
             if (id) setActive(id);
         };
 
@@ -97,12 +143,9 @@ export default function FloatingNav({
     const scrollTo = (id: string) => (e: React.MouseEvent) => {
         e.preventDefault();
 
-        // dock when going to any section other than top
-        if (id === "top") {
-            setDocked(false);
-        } else {
-            setDocked(true);
-        }
+        const isTop = id === "top";
+        setExpanded(!isTop);
+        setDocked(!isTop);
 
         const el = document.getElementById(id);
         if (!el) return;
@@ -115,12 +158,20 @@ export default function FloatingNav({
     const itemBase =
         "inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2";
     const containerBase =
-        "fixed z-50 p-2 rounded-2xl shadow-zinc-700 shadow-md";
+        "fixed z-50 rounded-2xl transition-[background-color,box-shadow,padding] duration-700 ease-in-out";
+    const expandedContainer =
+        `p-2 shadow-zinc-700 shadow-md ${className}`;
+    const collapsedContainer =
+        "p-0 shadow-none border-transparent bg-transparent backdrop-blur-0";
+    const dockedContrast =
+        docked ? "bg-zinc-950/90 border-white/20 backdrop-blur-xl" : "";
+    const containerClasses =
+        `${containerBase} ${expanded ? `${expandedContainer} ${dockedContrast}` : collapsedContainer}`;
 
     return (
         <>
             {/* Mobile bottom pill */}
-            <nav aria-label="Section navigation" className={`${containerBase} ${className} bottom-4 inset-x-0 mx-auto w-max max-w-[95vw] md:hidden pb-[env(safe-area-inset-bottom)]`} >
+            <nav aria-label="Section navigation" className={`${containerClasses} bottom-4 inset-x-0 mx-auto w-max max-w-[95vw] md:hidden pb-[env(safe-area-inset-bottom)]`} >
                 <ul className="flex items-center gap-1">
                     {sections.map(({ id, label, icon: Icon = Home }) => (
                         <li key={id}>
@@ -138,18 +189,19 @@ export default function FloatingNav({
                 </ul>
             </nav>
             
-            {/* Desktop side rail */}
-            // TODO 
+            {/* Desktop horizontal rail beneath marquee */}
             <nav
+                ref={navRef}
                 aria-label="Section navigation"
-                className={`${containerBase} ${className}  hidden md:flex flex-col gap-2
-                    top-1/2 -translate-y-1/2
-                    transform transition-all duration-500
+                className={`${containerClasses} hidden md:flex ${isRightDocked
+                        ? "flex-col items-stretch gap-1"
+                        : "flex-row flex-wrap items-center justify-center gap-2"
+                    }
                 ${docked
                         ? railPosition === "right"
-                            ? "right-4 translate-x-0"
-                            : "left-4 translate-x-0"
-                        : "left-1/2 -translate-x-1/2"
+                            ? "top-3/4 right-12 translate-x-0 -translate-y-1/2"
+                            : "top-3/4 left-12 translate-x-0 -translate-y-1/2"
+                        : "top-[clamp(50rem,55vh,55rem)] left-1/2 -translate-x-1/2"
                     }`}
             >
                 {sections.map(({ id, label, icon: Icon = Home }) => (
@@ -158,10 +210,10 @@ export default function FloatingNav({
                         href={`#${id}`}
                         onClick={scrollTo(id)}
                         aria-current={active === id ? "page" : undefined}
-                        className={`${itemBase} justify-start ${active === id ? itemActiveClass : itemClass}`}
+                        className={`${itemBase} ${active === id ? itemActiveClass : itemClass} ${isRightDocked && expanded ? "w-full justify-between" : ""}`}
                         title={label}
                     >
-                        <Icon className="size-4" size={0} />
+                        <Icon className="size-8" size={0} />
                         {label}
                     </a>
                 ))}

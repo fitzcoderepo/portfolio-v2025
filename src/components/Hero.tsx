@@ -3,7 +3,6 @@ import TechMarquee from "./TechMarquee";
 
 // directive used to indicate that the file should be treated as a client-side component. This is telling Next.js that this component must be rendered in the browser, not on the server.
 
-// app/components/Hero.tsx
 export function Hero() {
   return (
     <section
@@ -16,15 +15,13 @@ export function Hero() {
       </div>
 
       <div className="absolute flex flex-col top-15 left-20">
-        <span className="text-2xl font-bold uppercase text-zinc-400">
-          Alec Fitzgerald
-        </span>
-
-        <span className="text-lg text-zinc-500">
-          Software Developer
-        </span>
+          <span className="flex flex-row text-2xl font-bold uppercase text-zinc-400">
+            Alec Fitzgerald
+          </span>
+          <span className="text-lg text-zinc-500">
+            Software Developer
+          </span>
       </div>
-
 
       {/* Content */}
       <div className="relative z-10 px-6 text-center text-zinc-200">
