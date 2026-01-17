@@ -7,11 +7,6 @@ export default function Header() {
             <nav className=" mx-3 mt-1 flex justify-between text-sm text-zinc-800">
                 <a href="#top" className="mt-2 mx-3 text-lg font-bold">My Portfolio</a>
 
-                {/* <div className="flex gap-6 mt-2 mx-3 text-lg">
-                    <a href="#about" className="inline-flex items-center p-2">About me</a>
-                    <a href="#projects" className="inline-flex items-center p-2">See projects</a>
-                    <a href="#contact" className="inline-flex items-center p-2">Contact</a>
-                </div> */}
 
                 <div className="flex gap-3 mt-2 mx-3">
 

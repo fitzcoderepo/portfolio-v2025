@@ -195,7 +195,7 @@ export default function FloatingNav({
                 aria-label="Section navigation"
                 className={`${containerClasses} hidden md:flex ${isRightDocked
                         ? "flex-col items-stretch gap-1"
-                        : "flex-row flex-wrap items-center justify-center gap-2"
+                        : "flex-row flex-wrap -translate-y-40 items-center justify-center gap-2"
                     }
                 ${docked
                         ? railPosition === "right"

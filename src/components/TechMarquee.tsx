@@ -49,7 +49,7 @@ export default function TechMarquee() {
               style={{ color: it.hex }}
               aria-hidden="true"
             />
-            <span className="text-zinc-300 text-sm md:text-base">{it.name}</span>
+            <span className="text-zinc-700 text-sm md:text-base">{it.name}</span>
           </div>
         ))}
       </div>
