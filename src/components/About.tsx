@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import SectionHeading from "@/components/SectionHeading";
+import TechMarquee from "@/components/TechMarquee";
 
 
 export function About() {
@@ -42,6 +43,12 @@ export function About() {
                         <p className="mt-2 text-sm text-gray-600">
                             React · Tailwind/shadcn · accessibility · testing (Vitest/Playwright)
                         </p>
+                    </div>
+                </div>
+
+                <div className="mt-10">
+                    <div className="mx-auto max-w-lg px-3">
+                        <TechMarquee />
                     </div>
                 </div>
 
