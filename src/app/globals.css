@@ -10,39 +10,40 @@
 
 /* Light-mode defaults */
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
-  color-scheme: light dark; /* lets the UA pick the right form controls, etc. */
+  --background: #09090b;  /* zinc-950 */
+  --foreground: #f4f4f5;  /* zinc-100 */
+  color-scheme: light dark;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-.marquee-container:hover .marquee-content {
-  animation-play-state: paused;
-}
-
+/* ── Marquee ──────── */
+/*
+  The track contains two identical copies of the icon list.
+  Animating translateX from 0% → -50% scrolls exactly one copy, then loops
+  seamlessly — no jumps, no gaps.
+*/
 @keyframes marquee {
-  0% { transform: translateX(100%); }
-  100%   { transform: translateX(-300%); }
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
 .animate-marquee {
-  animation: marquee 40s linear infinite;
+  animation: marquee 35s linear infinite;
 }
 
+/* Pause on hover via the container class */
+.marquee-container:hover .animate-marquee {
+  animation-play-state: paused;
+}
 
+/* BASE */
 html, body { height: 100%; }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, sans-serif;
 }
 
-.prose p { line-height: 1.75; } /* @tailwindcss/typography - automatically styles the content such as paragraphs, headings, lists, and blockquotes—to be more appealing and easy to read. */
-a:focus-visible { outline: 2px solid; outline-offset: 2px; }
+a:focus-visible { outline: 2px solid #22d3ee; outline-offset: 2px; }
+.prose p { line-height: 1.75; }
+
