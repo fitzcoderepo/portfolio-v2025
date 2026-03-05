@@ -1,45 +1,93 @@
 'use client'
-import TechMarquee from "./TechMarquee";
-
-// directive used to indicate that the file should be treated as a client-side component. This is telling Next.js that this component must be rendered in the browser, not on the server.
 
 export function Hero() {
   return (
     <section
       id="top"
-      className="relative min-h-[100svh] isolate overflow-hidden flex items-center justify-center border border-cyan-400"
+      className="relative min-h-[100svh] isolate overflow-hidden flex flex-col items-center justify-center"
     >
-      {/* Aurora */}
-      <div className="pointer-events-none absolute inset-0 [--spread:42%] [--grad:conic-gradient(from_180deg_at_50%_50%,_#0ea5e9_0deg,_#60a5fa_110deg,_#94a3b8_200deg,_#0b1220_280deg,_#0ea5e9_360deg)]">
-        <div className="absolute -inset-24 blur opacity-40 [background:var(--grad)] [mask-image:radial-gradient(var(--spread)_var(--spread)_at_50%_40%,black,transparent_70%)]" />
-      </div>
+      {/* Dark background */}
+      <div className="absolute inset-0 bg-zinc-950" />
 
-      <div className="absolute flex flex-col top-15 left-20">
-          <span className="flex flex-row text-2xl font-bold uppercase text-cyan-6
-          00">
-            Alec Fitzgerald
-          </span>
-          <span className="text-lg text-zinc-500">
-            Software Developer
-          </span>
-      </div>
+      {/* light grid texture */}
+      <div
+        className="absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage: `linear-gradient(#a0a0a0 1px, transparent 1px), linear-gradient(90deg, #a0a0a0 1px, transparent 1px)`,
+          backgroundSize: "40px 40px",
+        }}
+      />
 
-      {/* Content */}
-      <div className="relative z-10 px-6 text-center text-zinc-200">
-        <h1 className="text-6xl md:text-8xl font-extrabold tracking-normal">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-slate-200 to-zinc-700">
-            Hello, world.
+      {/* Cyan glow orb */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-cyan-500/10 blur-[120px] pointer-events-none" />
+
+       {/* Main content */}
+      <div className="relative z-10 px-6 text-center max-w-4xl pb-28 md:pb-0">
+
+        {/* Name */}
+        <div className="font-mono text-xs text-zinc-500 tracking-[0.3em] uppercase mb-3">
+          Alec Fitzgerald
+        </div>
+
+        <h1 className="text-5xl md:text-8xl font-black tracking-tight leading-none text-white">
+          Hello,{" "}
+          <span
+            className="text-transparent"
+            style={{ WebkitTextStroke: "2px #22d3ee" }}
+          >
+            world.
           </span>
         </h1>
 
-        <div className="mx-auto max-w-4xl mt-12 justify-center text-zinc-400 text-lg">
-          I'm a software developer who enjoys taking vague ideas and collaborating with others to turn them into clear, working systems.
-          I bring a strong back-end foundation with a product-driven mindset. I don't just write code, I focus on supporting the customer experience and business goals.
-          I take responsibility for the systems I work on, proactively solve problems, and continuously look for ways to improve the overall product.
-          Continuous learning is part of the craft, and I adapt quickly to new tools and evolving requirements.
+        {/* Role pills */}
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+          <span className="font-mono text-xs tracking-widest uppercase px-3 py-1 border border-cyan-400/40 text-cyan-400">
+            Back-End Engineer
+          </span>
+          <span className="font-mono text-xs tracking-widest uppercase px-3 py-1 border border-zinc-700 text-zinc-500">
+            Full-Stack Capable
+          </span>
+          {/* <span className="font-mono text-xs tracking-widest uppercase px-3 py-1 border border-zinc-700 text-zinc-500">
+            Python · Django · TypeScript
+          </span> */}
         </div>
 
-        
+        <p className="mt-8 text-zinc-400 text-lg leading-relaxed max-w-2xl mx-auto">
+          I build back-end systems that businesses run on — 
+          APIs, data models, and the infrastructure underneath — 
+          designed from the start with practicality and usability in mind, 
+          and built to scale with growth. 
+          CS degree, product-aware, and full-stack capable when it counts.
+        </p>
+
+        <div className="mt-10 flex items-center justify-center gap-4">
+          <a
+            href="#projects"
+            className="px-6 py-3 bg-cyan-400 text-zinc-950 font-mono font-bold text-sm tracking-widest uppercase hover:bg-cyan-300 transition-colors"
+          >
+            View Work
+          </a>
+          <a
+            href="#contact"
+            className="px-6 py-3 border border-zinc-600 text-zinc-300 font-mono text-sm tracking-widest uppercase hover:border-zinc-400 hover:text-white transition-colors"
+          >
+            Get in Touch
+          </a>
+          <a
+            href="https://docs.google.com/document/d/1h_Fyrm2cc0_HqdkOWUQHCLoy9kvQYR2t49BvZBorps4/export?format=pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-3 border border-zinc-700 text-zinc-500 font-mono text-sm tracking-widest uppercase hover:border-zinc-500 hover:text-zinc-300 transition-colors"
+          >
+            Resume ↓
+          </a>
+        </div>
+      </div>
+
+      {/* Bottom scroll hint */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+        <span className="font-mono text-xs text-zinc-600 tracking-widest uppercase">Scroll</span>
+        <div className="w-px h-12 bg-gradient-to-b from-zinc-600 to-transparent" />
       </div>
     </section>
   );
